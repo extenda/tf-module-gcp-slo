@@ -7,7 +7,7 @@ resource "google_monitoring_slo" "slo" {
   for_each = { for i in var.slos : i.slo_id => i }
 
   service             = google_monitoring_custom_service.custom_service.service_id
-  project             = var.project_id
+  project             = var.monitoring_project_id
   slo_id              = each.value.slo_id
   display_name        = each.value.display_name
   goal                = each.value.goal

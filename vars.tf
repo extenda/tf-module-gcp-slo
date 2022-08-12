@@ -9,12 +9,6 @@ variable service_name {
   description = "Display name of the custom service"
 }
 
-variable project_id {
-  description = "Project ID to create SLOs in"
-  type        = string
-  default     = "hiiretail-monitoring-prod-6500"
-}
-
 variable slos {
   description = "Configuration for SLO"
   type        = any
