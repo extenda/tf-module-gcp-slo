@@ -9,6 +9,12 @@ variable service_name {
   description = "Display name of the custom service"
 }
 
+variable notification_channels {
+  type        = list(any)
+  description = "List of notificaton channel IDs"
+  default     = []
+}
+
 variable slos {
   description = "Configuration for SLO"
   type        = any

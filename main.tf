@@ -125,7 +125,6 @@ resource "google_monitoring_slo" "slo" {
 }
 
 resource "google_monitoring_alert_policy" "alert_policy" {
-  depends_on            = [google_monitoring_slo.slo]
   for_each              = google_monitoring_slo.slo
   project               = var.monitoring_project_id
   notification_channels = var.notification_channels
