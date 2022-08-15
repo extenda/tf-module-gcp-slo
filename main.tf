@@ -123,3 +123,28 @@ resource "google_monitoring_slo" "slo" {
     }
   }
 }
+
+resource "google_monitoring_alert_policy" "alert_policy" {
+  depends_on            = [google_monitoring_slo.slo]
+  for_each              = google_monitoring_slo.slo
+  project               = var.monitoring_project_id
+  notification_channels = var.notification_channels
+  display_name          = "[P2] ${var.service_name} - ${each.value.display_name} | High burnrate"
+  combiner              = "OR"
+
+  dynamic "conditions" {
+    for_each = {
+      1 : { name : "2% of error budget consumed in 1 hour", threshold : 14, time : "3600s" },
+      2 : { name : "5% of error budget consumed in 6 hours", threshold : 6, time : "21600s" },
+      3 : { name : "10% of error budget consumed in in 3 days", threshold : 1, time : "259200s" }
+    }
+    content {
+      display_name = conditions.value.name
+      condition_threshold {
+        comparison         = "COMPARISON_GT"
+        duration          = "0s"
+        filter =   "select_slo_burn_rate(${each.value.name}, ${conditions.value.time})"
+      }
+    }
+  }
+}
