@@ -9,6 +9,12 @@ variable "service_name" {
   description = "Display name of the custom service"
 }
 
+variable "telemetry_resource_name" {
+  type        = string
+  description = "The full name of the resource that defines this service"
+  default     = ""
+}
+
 variable "notification_channels" {
   type        = list(any)
   description = "List of notificaton channel IDs"

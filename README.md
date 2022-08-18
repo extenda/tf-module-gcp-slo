@@ -10,8 +10,9 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | **display\_name** | Display name of the custom service | `string` | n/a | **yes** |
-| monitoring\_project\_id | Project ID to create monitoring resources in | `string` | `"hiiretail-monitoring-prod-6500"` | no |
+| **monitoring\_project\_id** | Project ID to create monitoring resources in | `string` | `"hiiretail-monitoring-prod-6500"` | no |
 | **slo\_config** | Configuration for SLO | `any` | n/a | **yes** |
+| **telemetry\_resource\_name** | The full name of the resource that defines this service | `string` | `""` | no |
 
 ## Outputs
 

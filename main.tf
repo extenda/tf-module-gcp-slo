@@ -1,6 +1,9 @@
 resource "google_monitoring_custom_service" "custom_service" {
   project      = var.monitoring_project_id
   display_name = var.service_name
+  telemetry {
+    resource_name = var.telemetry_resource_name
+  }
 }
 
 resource "google_monitoring_slo" "slo" {
@@ -128,7 +131,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   for_each              = { for slo in var.slos : slo.slo_id => slo }
   project               = var.monitoring_project_id
   notification_channels = var.notification_channels
-  display_name          = lookup(lookup(each.value, "alert", {}), "name", "[P2] ${var.service_name} | SLO:${each.value.slo_id} - High burnrate ")
+  display_name          = lookup(lookup(each.value, "alert", {}), "name", "[P2] ${var.service_name} SLO | ${each.value.slo_id} - High burnrate ")
   combiner              = lookup(lookup(each.value, "alert", {}), "combiner", "OR")
 
   dynamic "conditions" {

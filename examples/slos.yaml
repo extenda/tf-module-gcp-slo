@@ -1,5 +1,4 @@
-# Includes "burn rate alert"
-- display_name: Month - Error rate
+- display_name: Month - Error rate # This SLO includes "burn rate alert"
   goal: 0.99
   slo_id: month-error-rate
   calendar_period: MONTH
@@ -26,7 +25,7 @@
     resource.labels.service_name="<my-service>"
   range_min: 0
   range_max: 1000
-  alert:  # Specify "burn rate alert" conditions, or leave empty {} for no alert.
+  alert:  # Specify "burn rate alert" alert conditions.
     name: "my-service: High SLO burn rate"
     conditions:
     - name: 2% of error budget condumed in 1 hour
@@ -34,3 +33,15 @@
       comparison: COMPARISON_GT
       duration: 0s
       time: 3600s
+- display_name: Month - Availability
+  slo_id: month-availability
+  goal: 0.998
+  calendar_period: MONTH
+  type: windows_based_sli
+  method: boolean_filter
+  window_period: 60s
+  metric_filter: >
+    metric.type="monitoring.googleapis.com/uptime_check/check_passed"
+    resource.type="uptime_url"
+    metric.labels.check_id="<uptime-check-id>"
+  alert: {} # No "burn rate alerts"
