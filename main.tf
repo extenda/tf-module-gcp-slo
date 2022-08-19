@@ -1,10 +1,13 @@
 resource "google_monitoring_custom_service" "custom_service" {
   project      = var.monitoring_project_id
   display_name = var.service_name
+  telemetry {
+    resource_name = var.telemetry_resource_name
+  }
 }
 
 resource "google_monitoring_slo" "slo" {
-  for_each = { for i in var.slos : i.slo_id => i }
+  for_each = { for slo in var.slos : slo.slo_id => slo }
 
   service             = google_monitoring_custom_service.custom_service.service_id
   project             = var.monitoring_project_id
@@ -122,4 +125,30 @@ resource "google_monitoring_slo" "slo" {
       }
     }
   }
+}
+
+resource "google_monitoring_alert_policy" "alert_policy" {
+  for_each              = { for slo in var.slos : slo.slo_id => slo }
+  project               = var.monitoring_project_id
+  notification_channels = var.notification_channels
+  display_name          = lookup(lookup(each.value, "alert", {}), "name", "[P2] ${var.service_name} SLO | ${each.value.slo_id} - High burnrate ")
+  combiner              = lookup(lookup(each.value, "alert", {}), "combiner", "OR")
+
+  dynamic "conditions" {
+    for_each = { for alert in lookup(each.value, "conditions", [
+      { name : "2% of error budget consumed in 1 hour", threshold_value : 14, time : "3600s" },
+      { name : "5% of error budget consumed in 6 hours", threshold_value : 6, time : "21600s" },
+      { name : "10% of error budget consumed in in 3 days", threshold_value : 1, time : "259200s" },
+    ]) : alert.name => alert }
+    content {
+      display_name = conditions.value.name
+      condition_threshold {
+        comparison      = lookup(conditions.value, "comparison", "COMPARISON_GT")
+        duration        = lookup(conditions.value, "duration", "0s")
+        threshold_value = lookup(conditions.value, "threshold_value")
+        filter          = "select_slo_burn_rate(${lookup(lookup(google_monitoring_slo.slo, each.value.slo_id), "name")}, ${conditions.value.time})"
+      }
+    }
+  }
+  depends_on = [google_monitoring_slo.slo]
 }

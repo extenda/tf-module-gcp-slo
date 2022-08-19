@@ -1,4 +1,4 @@
-- display_name: Month | Error rate
+- display_name: Month - Error rate
   goal: 0.99
   slo_id: month-error-rate
   calendar_period: MONTH
@@ -12,4 +12,36 @@
   total_service_filter: >
     metric.type="knative.dev/serving/revision/request_count"
     resource.type="knative_revision"
-    resource.labels.service_name=<my-service>"
+    resource.labels.service_name="<my-service>"
+- display_name: Month - Latency
+  goal: 0.95
+  slo_id: month-latency
+  calendar_period: MONTH
+  type: request_based_sli
+  method: distribution_cut
+  metric_filter: >
+    metric.type="knative.dev/serving/revision/request_latencies"
+    resource.type="knative_revision"
+    resource.labels.service_name="<my-service>"
+  range_min: 0
+  range_max: 1000
+  alert:
+    name: "my-service: High SLO burn rate"
+    conditions:
+    - name: 2% of error budget condumed in 1 hour
+      threshold_value: 14
+      comparison: COMPARISON_GT
+      duration: 0s
+      time: 3600s
+- display_name: Month - Availability
+  slo_id: month-availability
+  goal: 0.998
+  calendar_period: MONTH
+  type: windows_based_sli
+  method: boolean_filter
+  window_period: 60s
+  metric_filter: >
+    metric.type="monitoring.googleapis.com/uptime_check/check_passed"
+    resource.type="uptime_url"
+    metric.labels.check_id="<uptime-check-id>"
+  alert: {} # No "burn rate alert"
