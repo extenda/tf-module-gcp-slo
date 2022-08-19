@@ -12,7 +12,7 @@ variable service_name {
 variable telemetry_resource_name {
   type        = string
   description = "The full name of the resource that defines this service"
-  default     = ""
+  default     = null
 }
 
 variable notification_channels {
