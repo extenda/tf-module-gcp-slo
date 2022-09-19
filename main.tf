@@ -138,7 +138,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     for_each = { for alert in lookup(each.value, "conditions", [
       { name : "2% of error budget consumed in 1 hour", threshold_value : 14, time : "3600s" },
       { name : "5% of error budget consumed in 6 hours", threshold_value : 6, time : "21600s" },
-      { name : "10% of error budget consumed in in 3 days", threshold_value : 1, time : "259200s" },
+      { name : "10% of error budget consumed in 3 days", threshold_value : 1, time : "259200s" },
     ]) : alert.name => alert }
     content {
       display_name = conditions.value.name
