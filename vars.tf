@@ -25,3 +25,15 @@ variable slos {
   description = "Configuration for SLO"
   type        = any
 }
+
+variable documentation {
+  type        = string
+  description = "Documentation that is included with notifications and incidents related to the burn-rate alerts."
+  default     = ""
+}
+
+variable user_labels {
+  type        = map(any)
+  description = "Project ID to create monitoring resources in"
+  default     = {}
+}
