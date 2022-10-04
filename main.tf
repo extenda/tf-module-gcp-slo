@@ -159,7 +159,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     for_each = length(var.documentation) >= 1 ? [1] : []
     content {
       mime_type = "text/markdown"
-      content   = length(var.documentation) >= 0
+      content   = var.documentation
     }
   }
   depends_on = [google_monitoring_slo.slo]
