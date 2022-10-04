@@ -11,12 +11,12 @@ resource "google_monitoring_custom_service" "custom_service" {
 resource "google_monitoring_slo" "slo" {
   for_each = { for slo in var.slos : slo.slo_id => slo }
 
-  service      = google_monitoring_custom_service.custom_service.service_id
-  project      = var.monitoring_project_id
-  slo_id       = each.value.slo_id
-  display_name = each.value.display_name
-  goal         = each.value.goal
-  user_labels  = var.user_labels
+  service             = google_monitoring_custom_service.custom_service.service_id
+  project             = var.monitoring_project_id
+  slo_id              = each.value.slo_id
+  display_name        = each.value.display_name
+  goal                = each.value.goal
+  user_labels         = var.user_labels
   calendar_period     = lookup(each.value, "calendar_period", null)
   rolling_period_days = lookup(each.value, "rolling_period_days", null)
 
@@ -155,12 +155,10 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     }
   }
 
-  dynamic "documentation" {
-    for_each = length(var.documentation) >= 1 ? [1] : []
-    content {
-      mime_type = "text/markdown"
-      content   = length(var.documentation) >= 0
-    }
+  documentation {
+    mime_type = "text/markdown"
+    content   = var.documentation
   }
+
   depends_on = [google_monitoring_slo.slo]
 }

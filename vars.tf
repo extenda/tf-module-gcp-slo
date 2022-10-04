@@ -29,7 +29,7 @@ variable slos {
 variable documentation {
   type        = string
   description = "Documentation that is included with notifications and incidents related to the burn-rate alerts."
-  default     = ""
+  default     = " "
 }
 
 variable user_labels {
