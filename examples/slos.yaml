@@ -25,14 +25,6 @@
     resource.labels.service_name="<my-service>"
   range_min: 0
   range_max: 1000
-  alert:
-    name: "my-service: High SLO burn rate"
-    conditions:
-    - name: 2% of error budget condumed in 1 hour
-      threshold_value: 14
-      comparison: COMPARISON_GT
-      duration: 0s
-      time: 3600s
 - display_name: Month - Availability
   slo_id: month-availability
   goal: 0.998
@@ -44,4 +36,4 @@
     metric.type="monitoring.googleapis.com/uptime_check/check_passed"
     resource.type="uptime_url"
     metric.labels.check_id="<uptime-check-id>"
-  alert: {} # No "burn rate alert"
+  alert: false # Turn off alert
