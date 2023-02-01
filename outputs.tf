@@ -1,6 +1,6 @@
 output "custom_service" {
   description = "The custom service"
-  value       = google_monitoring_custom_service.service.id
+  value       = google_monitoring_custom_service.custom_service.id
 }
 
 output "slos" {
@@ -14,7 +14,7 @@ output "slos" {
 output "alert" {
   description = "The burn-rate alert"
   value = {
-    for k, v in google_monitoring_alert_policy.alert :
+    for k, v in google_monitoring_alert_policy.alert_policy :
     k => v.id
   }
 }
