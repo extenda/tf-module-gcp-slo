@@ -7,7 +7,7 @@ locals {
   ]
 }
 
-resource "google_monitoring_custom_service" "service" {
+resource "google_monitoring_custom_service" "custom_service" {
   project      = var.project
   display_name = var.service_name
   user_labels  = var.default_user_labels
@@ -20,7 +20,7 @@ resource "google_monitoring_custom_service" "service" {
 resource "google_monitoring_slo" "slo" {
   for_each = { for slo in var.slos : slo.slo_id => slo }
 
-  service             = google_monitoring_custom_service.service.service_id
+  service             = google_monitoring_custom_service.custom_service.service_id
   project             = var.project
   slo_id              = each.value.slo_id
   display_name        = each.value.display_name
@@ -138,7 +138,7 @@ resource "google_monitoring_slo" "slo" {
   }
 }
 
-resource "google_monitoring_alert_policy" "alert" {
+resource "google_monitoring_alert_policy" "alert_policy" {
   for_each = { for slo in var.slos : slo.slo_id => slo if try(slo.alert, true) }
 
   project      = var.project
