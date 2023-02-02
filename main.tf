@@ -144,7 +144,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   project      = var.project
   display_name = "[P2] ${var.service_name} SLO | ${each.value.slo_id} - High burnrate "
   combiner     = "OR"
-  user_labels  = null
+  user_labels  = merge(var.default_user_labels, try(each.value.user_labels, {}))
   notification_channels = try(
     [for nc in each.value.notification_channels : try(var.notification_channel_ids[nc], nc)],
     local.fallback_notification_channels,
