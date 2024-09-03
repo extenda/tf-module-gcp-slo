@@ -3,15 +3,9 @@ variable "project" {
   description = "Project ID to create monitoring resources in"
 }
 
-variable "service_name" {
-  type        = string
-  description = "Display name of the custom service"
-}
-
-variable "telemetry_resource_name" {
-  type        = string
-  description = "The full name of the resource that defines this service"
-  default     = " "
+variable "services" {
+  description = "List of services and their SLOs"
+  type        = any
 }
 
 variable "default_user_labels" {
@@ -26,19 +20,14 @@ variable "fallback_notification_channels" {
   default     = []
 }
 
+variable "fallback_alert_documentation" {
+  type        = string
+  description = "Documentation to be set for all burn-rate alerts."
+  default     = null
+}
+
 variable "notification_channel_ids" {
   type        = map(string)
   description = "Enables you to provide the the NCs 'display name' instead of 'id', { nc_display_name: nc_id  } or output from tf-module-gcp-notification-channels"
   default     = {}
-}
-
-variable "default_alert_documentation" {
-  type        = string
-  description = "Documentation to be set for all burn-rate alerts."
-  default     = " "
-}
-
-variable "slos" {
-  description = "Configuration for SLO"
-  type        = any
 }
