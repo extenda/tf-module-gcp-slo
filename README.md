@@ -1,6 +1,6 @@
-# GCP SLOs
+# tf-module-gcp-slos
 
-For creating SLOs in GCP Monitoring.
+Module for creating Service Level Objectives (SLOs) in Google Cloud. The `slo` object in the input follows the same structure as the official [terraform module](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo), which means this module can create whatever SLOs it supports (v6.0.1). By default, the module also creates a **fast-burn** alert for each SLO. This alert can be turned off or tweaked by setting the `alert` object in each SLO. More information on the input argument structure can be found below or in [examples](./examples/).
 
 ## Usage
 
@@ -46,7 +46,7 @@ module "gcp_slos" {
 
 ## `services` object
 
-This module is essentially a wrapper around the terraform resources. Refer to the documentation below to understand the structure of each object. Take a look in [examples](./examples/) for a better understanding of how to use this module.
+The main input for this module is the services list. Each service can have multiple SLOs, and each SLO can have its own alert configuration. The argument to `slos` is a list of objects that follows the same structure as the 📖 [official terraform slo module](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo). Take a look in [examples](./examples/) for a better understanding of how to use this module. This module supports Cloud Run or Custom services. For Cloud Run, use the same name for automatic linking (so it's visible in the SLO tab in the console). For Custom services, it's possible to provide the `telemetry_resource_name`.
 
 📖 [Terraform Docs](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo) \
 ✅ [Examples](./examples/)
