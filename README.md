@@ -1,36 +1,135 @@
-## Inputs
+# GCP SLOs
 
-| Name                               | Description                                                                                                                                                                        | Type        | Default | Required |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------- | :------: |
-| __project__                        | Project ID to create alerts in                                                                                                                                                     | `string`    | n/a     |   yes    |
-| __service_name__                   | Display name of the custom service                                                                                                                                                 | `string`    | n/a     |   yes    |
-| __telemetry_resource_name__        | The full name of the resource that defines this service                                                                                                                            | `string`    | n/a     |    no    |
-| __default_user_labels__            | Labels to be set for __all__ alerts                                                                                                                                                | `map(any)`  | {}      |    no    |
-| __fallback_notification_channels__ | NCs to be set for all alerts that don't provide `notification_channels`. Provide the NCs "id" or "display name" (the latter is dependant on the notification_channel_ids variable) | `list(any)` | []      |    no    |
-| __notification_channel_ids__       | To be able to provide channels display name instead of id/name, provide a  be { display_name: name } or output from tf-module-gcp-notification-channels.                           | `list(any)` | []      |    no    |
-| __default_alert_documentation__    | Documentation to be set for all burn-rate alerts.                                                                                                                                  | `string`    | n/a     |    no    |
-| __slos__                           | The list of alert policies configurations.                                                                                                                                         | `list(any)` | n/a     |   yes    |
+For creating SLOs in GCP Monitoring.
 
-## Burn rate alerting
+## Usage
 
-All SLOs will have a burn rate alert included, this alert has the following conditions and will go off if any are met.
+```hcl
+module "gcp_slos" {
+  source  = "path/to/module"
+  project = "your-project-id"
 
-- 2% of error budget consumed in 1 hour
-- 5% of error budget consumed in 6 hours
-- 10% of error budget consumed in in 3 days
+  services = [
+    {
+      service = {
+        name = "example-service"
+        type = "CLOUD_RUN"
+        user_labels = {
+          team = "platform"
+        }
+      }
+      slos = [
+        {
+          display_name = "Availability SLO"
+          goal = 0.99
+          rolling_period_days = 28
+          basic_sli = {
+            availability = {
+              enabled = true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
 
-If you don’t want an alert you can just leave the alert empty, like the example below.
+| Name                           | Description                                                                                                                                  | Type          | Default | Required |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | :------: |
+| project                        | Project ID to create monitoring resources in                                                                                                 | `string`      | n/a     |   yes    |
+| default_user_labels            | User labels to be set for all alerts                                                                                                         | `map(any)`    | `{}`    |    no    |
+| fallback_notification_channels | List of display names or ids for notification channels to be set for all alerts, if unspecified in the alert.                                | `list(any)`   | `[]`    |    no    |
+| notification_channel_ids       | Enables you to provide the NCs 'display name' instead of 'id', { nc_display_name: nc_id } or output from tf-module-gcp-notification-channels | `map(string)` | `{}`    |    no    |
+| fallback_alert_documentation   | Documentation to be set for all alerts, if unspecified in the alert.                                                                         | `string`      | `null`  |    no    |
+| services                       | List of services and their SLOs                                                                                                              | `any`         | n/a     |   yes    |
 
-```yaml
-- display_name: Example SLO
-  ...
-  alert: false
+## `services` object
+
+This module is essentially a wrapper around the terraform resources. Refer to the documentation below to understand the structure of each object. Take a look in [examples](./examples/) for a better understanding of how to use this module.
+
+📖 [Terraform Docs](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo) \
+✅ [Examples](./examples/)
+
+```hcl
+services = [
+  {
+    service = {
+      name                    = string
+      type                    = string       # "CUSTOM" or "CLOUD_RUN"
+      user_labels             = map(string)  # Optional
+      telemetry_resource_name = string       # Optional, for CUSTOM services
+    }
+    slos = [
+      {
+        display_name        = string
+        goal                = number
+        rolling_period_days = number       # Optional
+        calendar_period     = string       # Optional, one of "DAY", "WEEK", "FORTNIGHT", "MONTH"
+        user_labels         = map(string)  # Optional
+
+        # One of the following SLI types must be specified:
+        basic_sli = {
+          # ... (structure as per Terraform documentation)
+        }
+        request_based_sli = {
+          # ... (structure as per Terraform documentation)
+        }
+        windows_based_sli = {
+          # ... (structure as per Terraform documentation)
+        }
+
+        alert = {
+          enabled               = bool    # Optional
+          title                 = string  # Optional
+          documentation         = string  # Optional
+          threshold_value       = number  # Optional
+          condition_name        = string  # Optional
+          lookback_duration     = string  # Optional
+          threshold_value       = number  # Optional
+          duration              = string  # Optional
+          notification_channels = list(string)  # Optional
+        }
+      }
+    ]
+  }
+]
 ```
 
 ## Outputs
 
-| Name           | Description         |
-| -------------- | ------------------- |
-| custom service | The custom service  |
-| slos           | The SLOs            |
-| alert          | The burn-rate alert |
+### `services` output structure
+
+```hcl
+{
+  "service_name" = {
+    id   = string
+    name = string
+    type = string  # "CUSTOM" or "CLOUD_RUN"
+  }
+}
+```
+
+### `slos` output structure
+
+```hcl
+{
+  "service_name-slo_name" = {
+    id           = string
+    name         = string
+    service_name = string
+  }
+}
+```
+
+### `alerts` output structure
+
+```hcl
+{
+  "service_name-slo_name" = {
+    id           = string
+    name         = string
+    service_name = string
+  }
+}
+```
