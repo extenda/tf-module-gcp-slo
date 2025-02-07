@@ -234,7 +234,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     for service in local.services_with_type : [
       for s in service.slos : merge(s, { service_name = service.service.name })
     ]
-  ]) : "${slo.service_name}-${slo.formatted_name}" => slo }
+  ]) : "${slo.service_name}-${slo.formatted_name}" => slo if lookup(slo, "alert", null) != null && lookup(slo.alert, "enabled", false) }
 
   project = var.project
   display_name = try(

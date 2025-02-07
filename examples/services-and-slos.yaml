@@ -72,6 +72,7 @@
       availability:
         enabled: true
     alert: # Override default alert policy
+      enabled: true 
       title: Custom alert title
       description: Custom alert description
       lookback_duration: 86400s # 1 day
@@ -80,11 +81,11 @@
       notification_channels:
       - projects/my-project/notificationChannels/my-channel # Override fallback notification channels
 
-  - display_name: Don't create an alert for this SLO
+  - display_name: Create a default burn rate alert for this SLO
     goal: 0.999
     rolling_period_days: 28
     basic_sli:
       availability:
         enabled: true
     alert:
-      enabled: false
+      enabled: true
