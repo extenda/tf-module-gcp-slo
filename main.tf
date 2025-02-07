@@ -234,7 +234,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     for service in local.services_with_type : [
       for s in service.slos : merge(s, { service_name = service.service.name })
     ]
-  ]) : "${slo.service_name}-${slo.formatted_name}" => slo }
+  ]) : "${slo.service_name}-${slo.formatted_name}" => slo if try(slo.create_burn_rate_alert, true) }
 
   project = var.project
   display_name = try(

@@ -79,12 +79,14 @@
       duration: 3600s # 1 hour
       notification_channels:
       - projects/my-project/notificationChannels/my-channel # Override fallback notification channels
+    create_burn_rate_alert: true
 
-  - display_name: Don't create an alert for this SLO
+  - display_name: Create a default burn rate alert for this SLO
     goal: 0.999
     rolling_period_days: 28
     basic_sli:
       availability:
         enabled: true
     alert:
-      enabled: false
+      enabled: true
+    create_burn_rate_alert: true
