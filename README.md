@@ -1,6 +1,6 @@
 # tf-module-gcp-slos
 
-Module for creating Service Level Objectives (SLOs) in Google Cloud. The `slo` object in the input follows the same structure as the official [terraform module](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo), which means this module can create whatever SLOs it supports (v6.0.1). By default, this module does not create a **fast-burn** alert for each SLO. Instead creation of burn alerts is controlled with the `create_burn_rate_alert` argument. This alert can be turned off or tweaked by setting the `alert` object in each SLO. More information on the input argument structure can be found below or in [examples](./examples/).
+Module for creating Service Level Objectives (SLOs) in Google Cloud. The `slo` object in the input follows the same structure as the official [terraform module](https://registry.terraform.io/providers/hashicorp/google/6.0.1/docs/resources/monitoring_slo), which means this module can create whatever SLOs it supports (v6.0.1). A burn rate alert can be created using the `alert` argument. This alert can be turned off or tweaked by setting the `alert` object in each SLO. More information on the input argument structure can be found below or in [examples](./examples/).
 
 ## Usage
 
@@ -27,7 +27,8 @@ module "gcp_slos" {
             availability = {
               enabled = true
             }
-          create_burn_rate_alert = true
+          alert:
+            enabled = true
           }
         }
       ]
@@ -80,10 +81,8 @@ services = [
           # ... (structure as per Terraform documentation)
         }
 
-        create_burn_rate_alert  = bool    # Optional, default = false
-
         alert = {
-          enabled               = bool    # Optional
+          enabled               = bool    # Optional, default = false
           title                 = string  # Optional
           documentation         = string  # Optional
           threshold_value       = number  # Optional
