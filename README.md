@@ -27,7 +27,8 @@ module "gcp_slos" {
             availability = {
               enabled = true
             }
-          alert:
+          }
+          alert = {
             enabled = true
           }
         }
